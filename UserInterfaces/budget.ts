@@ -16,7 +16,6 @@ class ITBudget implements TenYearBudget {
 
     constructor() {
         this.budgets = [];
-        // Automatically add budgets for the first 10 years
         for (let year = 2024; year <= 2033; year++) {
             if (year <= 2026) {
                 this.addYearlyBudget(year, "Software Engineer", 100000);
@@ -44,21 +43,16 @@ class ITBudget implements TenYearBudget {
     }
 }
 
-// Create an instance of ITBudget
 const itBudget = new ITBudget();
 
-// Calculate the total budget over 10 years
 const totalBudget = itBudget.calculateTotalBudget();
 console.log(`Total budget over 10 years: $${totalBudget}`);
 
-// Get the average salary for the role of "Software Engineer"
 const averageSoftwareEngineerSalary = itBudget.getAverageSalaryForRole("Software Engineer");
 console.log(`Average salary for Software Engineer over 10 years: $${averageSoftwareEngineerSalary}`);
 
-// Get the average salary for the role of "Data Scientist"
 const averageDataScientistSalary = itBudget.getAverageSalaryForRole("Data Scientist");
 console.log(`Average salary for Data Scientist over 10 years: $${averageDataScientistSalary}`);
 
-// Get the average salary for the role of "System Administrator"
 const averageSysAdminSalary = itBudget.getAverageSalaryForRole("System Administrator");
 console.log(`Average salary for System Administrator over 10 years: $${averageSysAdminSalary}`);
