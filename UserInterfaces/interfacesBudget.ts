@@ -1,59 +1,63 @@
-// interfaces for creating budget of IT professions
-
-interface YearlyBudget {
-    year: number;
-    role: string;
-    averageSalary: number;
+interface BudgetCategory {
+    name: string;
+    allocated: number;
+    spent: number;
 }
+class Budget {
+    private categories: BudgetCategory[] = [];
 
-interface TenYearBudget {
-    budgets: YearlyBudget[];
-    calculateTotalBudget(): number;
-    addYearlyBudget(year: number, role: string, averageSalary: number): void;
-    getAverageSalaryForRole(role: string): number;
-}
-
-class ITBudget implements TenYearBudget {
-    budgets: YearlyBudget[];
-
-    constructor() {
-        this.budgets = [];
-        for (let year = 2024; year <= 2033; year++) {
-            this.addYearlyBudget(year, "Software Engineer", 90000 + (year - 2024) * 5000);
-            this.addYearlyBudget(year, "Data Scientist", 100000 + (year - 2024) * 5000);
-            this.addYearlyBudget(year, "System Administrator", 80000 + (year - 2024) * 2000);
+    addCategory(category: BudgetCategory): void {
+        this.categories.push(category);
+    }
+    spend(categoryName: string, amount: number): void {
+        const category = this.categories.find(c => c.name === categoryName);
+        if (category) {
+            if (category.spent + amount <= category.allocated) {
+                category.spent += amount;
+            } else {
+                console.log(`Cannot spend more than allocated budget for category: ${categoryName}`);
+            }
+        } else {
+            console.log(`Category ${categoryName} not found.`);
         }
     }
 
-    addYearlyBudget(year: number, role: string, averageSalary: number): void {
-        const newBudget: YearlyBudget = { year, role, averageSalary };
-        this.budgets.push(newBudget);
+    removeCategory(categoryName: string): void {
+        this.categories = this.categories.filter(c => c.name !== categoryName);
     }
 
-    calculateTotalBudget(): number {
-        return this.budgets.reduce((total, budget) => total + budget.averageSalary, 0);
+    getRemainingBudget(categoryName: string): number {
+        const category = this.categories.find(c => c.name === categoryName);
+        if (category) {
+            return category.allocated - category.spent;
+        } else {
+            console.log(`Category ${categoryName} not found.`);
+            return 0;
+        }
     }
 
-    getAverageSalaryForRole(role: string): number {
-        const roleBudgets = this.budgets.filter(budget => budget.role === role);
-        const totalSalary = roleBudgets.reduce((total, budget) => total + budget.averageSalary, 0);
-        return roleBudgets.length > 0 ? totalSalary / roleBudgets.length : 0;
+    getTotalSpent(): number {
+        return this.categories.reduce((total, category) => total + category.spent, 0);
+    }
+
+    getTotalRemainingBudget(): number {
+        return this.categories.reduce((total, category) => total + (category.allocated - category.spent), 0);
     }
 }
-const itBudget = new ITBudget();
-console.log("Yearly Budgets:");
-itBudget.budgets.forEach(budget => {
-    console.log(`Year: ${budget.year}, Role: ${budget.role}, Average Salary: $${budget.averageSalary}`);
-});
+const myBudget = new Budget();
+myBudget.addCategory({ name: "Food", allocated: 500, spent: 0 });
+myBudget.addCategory({ name: "Transport", allocated: 300, spent: 50 });
 
-const totalBudget = itBudget.calculateTotalBudget();
-console.log(`\nTotal budget over 10 years: $${totalBudget}`);
-console.log(`\nAverage salary for Software Engineer over 10 years: $${itBudget.getAverageSalaryForRole("Software Engineer")}`);
-console.log(`Average salary for Data Scientist over 10 years: $${itBudget.getAverageSalaryForRole("Data Scientist")}`);
-console.log(`Average salary for System Administrator over 10 years: $${itBudget.getAverageSalaryForRole("System Administrator")}`);
+myBudget.spend("Food", 100);
+myBudget.spend("Transport", 50);
+console.log(`Remaining budget for Food: ${myBudget.getRemainingBudget("Food")}`);
+console.log(`Remaining budget for Transport: ${myBudget.getRemainingBudget("Transport")}`);
 
+console.log(`Total spent budget: ${myBudget.getTotalSpent()}`);
+console.log(`Total remaining budget: ${myBudget.getTotalRemainingBudget()}`);
 
-
+myBudget.removeCategory("Food");
+console.log(`Total remaining budget after removing Food: ${myBudget.getTotalRemainingBudget()}`);
 
 
 
